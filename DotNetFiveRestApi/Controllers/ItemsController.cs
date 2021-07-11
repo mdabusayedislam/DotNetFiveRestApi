@@ -1,11 +1,12 @@
-﻿using DotNetFiveRestApi.Entities;
+﻿using DotNetFiveRestApi.Dtos;
+using DotNetFiveRestApi.Entities;
 using DotNetFiveRestApi.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
+
 
 namespace DotNetFiveRestApi.Controllers
 {
@@ -13,23 +14,23 @@ namespace DotNetFiveRestApi.Controllers
     [Route("items")]
     public class ItemsController : ControllerBase
     {
-        private readonly InMemoryItemsRepository repository;
-        public ItemsController()
+        private readonly IInMemoryItemsRepository _repository;
+        public ItemsController(IInMemoryItemsRepository repository)
         {
-            repository = new InMemoryItemsRepository();
+            _repository =repository;
         }
 
         [HttpGet]
-        public IEnumerable<Item> GetItems()
+        public IEnumerable<ItemDto> GetItems()
         {
-            var items= repository.GetItems();
+            var items= _repository.GetItems().Select(item=>item.AsDto());
             return items;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Item> GetItem(Guid id)
+        public ActionResult<ItemDto> GetItem(Guid id)
         {
-            var item= repository.GetItem(id);
+            var item = _repository.GetItem(id).AsDto();
             if(item is null)
             {
                 return NotFound();
