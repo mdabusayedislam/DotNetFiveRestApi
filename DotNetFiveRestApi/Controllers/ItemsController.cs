@@ -37,5 +37,50 @@ namespace DotNetFiveRestApi.Controllers
             }
             return Ok(item);
         }
+        [HttpPost]
+        public ActionResult<ItemDto> CreateItem(CreateItemDto itemDto)
+        {
+            Item item = new()
+            {
+                Id = Guid.NewGuid(),
+                Name = itemDto.Name,
+                Price = itemDto.Price,
+                CreatedDate = DateTimeOffset.UtcNow
+            };
+            _repository.CreateItem(item);
+
+            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto()) ; 
+
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateItem(Guid id,UpdateItemDto itemDto)
+        {
+
+            var existingItem = _repository.GetItem(id);
+            if(existingItem is null)
+            {
+                return NotFound();
+            }
+            Item updateItem = existingItem with
+            {
+                Name = itemDto.Name,
+                Price = itemDto.Price
+            };
+            _repository.UpdateItem(updateItem);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteItem(Guid id)
+        {
+            var existingItem = _repository.GetItem(id);
+            if (existingItem is null)
+            {
+                return NotFound();
+            }            
+            _repository.DeleteItem(id);
+            return NoContent();
+        }
     }
 }
