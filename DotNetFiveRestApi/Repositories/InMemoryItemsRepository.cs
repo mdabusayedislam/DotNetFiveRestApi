@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNetFiveRestApi.Repositories
 {
-    public class InMemoryItemsRepository : IInMemoryItemsRepository
+    public class InMemoryItemsRepository : IItemsRepository
     {
         private readonly List<Item> items = new()
         {
